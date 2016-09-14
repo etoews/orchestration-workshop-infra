@@ -44,7 +44,7 @@ loop() {
 
 create() {
   rack servers instance create \
-    --region ${RS_REGION_NAME}
+    --region ${RS_REGION_NAME} \
     --name ${SERVER_NAME} \
     --image-name "Ubuntu 16.04 LTS (Xenial Xerus) (PVHVM)" \
     --flavor-name "1 GB General Purpose v1" \
