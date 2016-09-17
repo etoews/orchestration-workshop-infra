@@ -120,7 +120,7 @@ do_hello() {
 }
 
 info() {
-  loop info
+  loop do_info
 }
 
 do_info() {
