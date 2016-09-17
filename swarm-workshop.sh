@@ -3,6 +3,7 @@
 set -euo pipefail
 
 # Usage:
+#   swarm-workshop.sh keypair
 #   swarm-workshop.sh create [from_user] [to_user] [from_node] [to_node]
 #     e.g. swarm-workshop.sh create 1 20 1 5
 #   swarm-workshop.sh version [from_user] [to_user] [from_node] [to_node]
@@ -15,19 +16,13 @@ set -euo pipefail
 #     export RS_API_KEY={my-rackspace-api-key}
 #   rack: The Rackspace command line interface for managing Rackspace services
 #     https://developer.rackspace.com/docs/rack-cli/configuration/#installation-and-configuration
-#   Keypair named swarm
-#     ssh-keygen -q -b 4096 -t rsa -N "" -f ~/.ssh/id_rsa.swarm
-#     for region in IAD; do
-#       export RS_REGION_NAME=${region}
-#       rack servers keypair upload --name swarm --file ~/.ssh/id_rsa.swarm.pub
-#     done
 
 main() {
-  SUB_COMMAND=$1
-  FROM_USER=$2
-  TO_USER=$3
-  FROM_NODE=$4
-  TO_NODE=$5
+  SUB_COMMAND=${1}
+  FROM_USER=${2:-0}
+  TO_USER=${3:-0}
+  FROM_NODE=${4:-0}
+  TO_NODE=${5:-0}
 
   ${SUB_COMMAND}
 }
@@ -48,6 +43,16 @@ loop() {
       done
     done
   done
+}
+
+keypair() {
+  ssh-keygen -q -b 4096 -t rsa -N "" -f ~/.ssh/id_rsa.swarm
+
+  for region in IAD; do
+    RS_REGION_NAME=${region}
+    rack servers keypair upload --name swarm --file ~/.ssh/id_rsa.swarm.pub
+  done
+
 }
 
 create() {
