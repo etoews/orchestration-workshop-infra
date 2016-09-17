@@ -3,11 +3,12 @@
 set -euo pipefail
 
 # Usage:
-#   swarm-workshop.sh create
-#   swarm-workshop.sh version
-#   swarm-workshop.sh hello
-#   swarm-workshop.sh clusterize
-#   dockerswarm100.sh delete
+#   swarm-workshop.sh create [from_user] [to_user] [from_node] [to_node]
+#     e.g. swarm-workshop.sh create 1 20 1 5
+#   swarm-workshop.sh version [from_user] [to_user] [from_node] [to_node]
+#   swarm-workshop.sh hello [from_user] [to_user] [from_node] [to_node]
+#   swarm-workshop.sh clusterize [from_user] [to_user] [from_node] [to_node]
+#   dockerswarm100.sh delete [from_user] [to_user] [from_node] [to_node]
 # Requirements:
 #   Environment Variables:
 #     export RS_USERNAME={my-rackspace-username}
@@ -22,27 +23,38 @@ set -euo pipefail
 #     done
 
 main() {
-  echo "$@"
-  loop $@
+  SUB_COMMAND=$1
+  FROM_USER=$2
+  TO_USER=$3
+  FROM_NODE=$4
+  TO_NODE=$5
+
+  ${SUB_COMMAND}
 }
 
 loop() {
+  DO_FUNCTION=$1
+
   for region in IAD; do
-    export RS_REGION_NAME=${region}
+    RS_REGION_NAME=${region}
     echo -e "Region\t\t${RS_REGION_NAME}"
 
-    for u in $(seq -f "%02g" 1 1); do
-      for n in $(seq 1 5); do
+    for u in $(seq -f "%02g" ${FROM_USER} ${TO_USER}); do
+      for n in $(seq ${FROM_NODE} ${TO_NODE}); do
         USERNAME=user${u}
         SERVER_NAME=${USERNAME}-node${n}
         echo -e "Name\t\t${SERVER_NAME}"
-        "$@"
+        ${DO_FUNCTION}
       done
     done
   done
 }
 
 create() {
+  loop do_create
+}
+
+do_create() {
   rack servers instance create \
     --region ${RS_REGION_NAME} \
     --name ${SERVER_NAME} \
@@ -53,6 +65,10 @@ create() {
 }
 
 clusterize() {
+  loop do_clusterize
+}
+
+do_clusterize() {
   IFS=$'\n'
   hosts=""
   nodes=$(rack servers instance list --name ${USERNAME} --fields name,publicipv4,privateipv4 --no-header)
@@ -72,21 +88,37 @@ clusterize() {
 }
 
 delete() {
+  loop do_delete
+}
+
+do_delete() {
   rack servers instance delete --name ${SERVER_NAME}
 }
 
 version() {
+  loop do_version
+}
+
+do_version() {
   SERVER_IP=$(get_server_ip)
   DOCKER_VERSION=$(ssh -i ~/.ssh/id_rsa.swarm root@${SERVER_IP} docker version | grep Version | tail -n 1 | awk '{print $2}')
   echo -e "Version\t\t${DOCKER_VERSION}"
 }
 
 hello() {
+  loop do_hello
+}
+
+do_hello() {
   SERVER_IP=$(get_server_ip)
   ssh -i ~/.ssh/id_rsa.swarm root@${SERVER_IP} docker run alpine echo "Hello World"
 }
 
 info() {
+  loop info
+}
+
+do_info() {
   SERVER_IP=$(get_server_ip)
   ssh -i ~/.ssh/id_rsa.swarm root@${SERVER_IP} docker info | awk '/Swarm/,/Runtimes/' | sed '$ d'
 }
