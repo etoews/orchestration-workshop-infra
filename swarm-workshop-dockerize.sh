@@ -17,9 +17,6 @@ apt-get -q update
 apt-get remove -y --purge dnsmasq-base
 apt-get -qy install fail2ban git httping apache2-utils htop
 
-# broken
-# echo 1000000 > /proc/sys/net/nf_conntrack_max
-
 apt-get -y install apt-transport-https ca-certificates
 apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" > /etc/apt/sources.list.d/docker.list
@@ -48,6 +45,8 @@ docker pull node:4-slim
 docker pull registry:2
 docker pull golang
 docker pull busybox
+
+sysctl -w net.netfilter.nf_conntrack_max=1000000
 
 # debug cloud-init
 # less /var/log/cloud-init-output.log
