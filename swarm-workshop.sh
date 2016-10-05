@@ -3,13 +3,19 @@
 set -euo pipefail
 
 # Usage:
-#   swarm-workshop.sh keypair
-#   swarm-workshop.sh create [from_user] [to_user] [from_node] [to_node]
-#     e.g. swarm-workshop.sh create 1 20 1 5
-#   swarm-workshop.sh version [from_user] [to_user] [from_node] [to_node]
-#   swarm-workshop.sh hello [from_user] [to_user] [from_node] [to_node]
-#   swarm-workshop.sh clusterize [from_user] [to_user] [from_node] [to_node]
-#   dockerswarm100.sh delete [from_user] [to_user] [from_node] [to_node]
+#   1. Create a keypair
+#      swarm-workshop.sh keypair
+#   2. Create the servers
+#      swarm-workshop.sh create [from_user] [to_user] [from_node] [to_node]
+#      e.g. swarm-workshop.sh create 1 20 1 5
+#   3. You'll know the servers are ready when version returns the proper Docker version
+#      swarm-workshop.sh version [from_user] [to_user] [from_node] [to_node]
+#   4. Clusterize the servers
+#      swarm-workshop.sh clusterize [from_user] [to_user] [from_node] [to_node]
+#   5. (Optional) Test the servers with the hello-world image
+#      swarm-workshop.sh hello [from_user] [to_user] [from_node] [to_node]
+#   6. Delete the servers
+#      dockerswarm100.sh delete [from_user] [to_user] [from_node] [to_node]
 # Requirements:
 #   Environment Variables:
 #     export RS_USERNAME={my-rackspace-username}
